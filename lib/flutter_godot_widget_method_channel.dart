@@ -14,4 +14,25 @@ class MethodChannelFlutterGodotWidget extends FlutterGodotWidgetPlatform {
     final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
   }
+  @override
+  Future<String?> openGame() async {
+    
+    //final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
+    //startEvent();
+    final  result =await methodChannel.invokeMethod<String>("openGame");//GodotHandler("ad");
+    print('Result from Android: $result');
+    return result;
+  }
+  
+  @override
+  Future<String?> sendData2Game(String data) async {
+    try {
+      await methodChannel.invokeMethod("sendData2Godot", {"data": data});
+      return "a";
+    } catch (e) {
+      print("Error sending data to native godot: $e");
+      return "";
+    }
+    return"";
+  }
 }
