@@ -118,12 +118,6 @@ class GodotPluginMaster(godot: Godot?, ) :  GodotPlugin(godot), EventChannel.Str
     private var methodCall: MethodChannel.Result? = null;
 
 
-    private fun openGameInGodot() {
-        // Code to start the Godot game or scene
-        Log.d("GodotpluginMaster", "openGameInGodot called")
-    }
-
-
 
 
 }

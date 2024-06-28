@@ -1,6 +1,11 @@
 package com.my_org.flutter_godot_widget
 
 import androidx.annotation.NonNull
+import android.content.Context
+import android.content.Intent
+
+import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -9,7 +14,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
 /** FlutterGodotWidgetPlugin */
-class FlutterGodotWidgetPlugin: FlutterPlugin, MethodCallHandler {
+class FlutterGodotWidgetPlugin: FlutterPlugin, MethodCallHandler, FlutterActivity(){
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -23,8 +28,28 @@ class FlutterGodotWidgetPlugin: FlutterPlugin, MethodCallHandler {
 
   override fun onMethodCall(call: MethodCall, result: Result) {
     if (call.method == "getPlatformVersion") {
+      //result.success("Android ${android.os.Build.VERSION.RELEASE}")
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
-    } else {
+      
+    }
+    if (call.method == "openGame") {
+      print("2 handlemethodcalls");
+      val intent = Intent(this, GodotStarter::class.java)
+      startActivity(intent)
+      result.success("Game opened")
+    }
+    if (call.method == "sendData2Godot") {
+      val data = call.argument<String>("data")
+      println("Arguments kotlin: ${call.arguments}")
+      data?.let {
+          //GodotpluginMaster.send2Godot(data)
+          //GodotpluginMaster.sendData2Flut()
+          result.success("Data sent to Godot: $data")
+      } ?: run {
+          result.error("MISSING_DATA", "Data argument is missing", null)
+      }
+    }
+    else {
       result.notImplemented()
     }
   }

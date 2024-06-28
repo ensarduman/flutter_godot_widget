@@ -26,4 +26,10 @@ abstract class FlutterGodotWidgetPlatform extends PlatformInterface {
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
+  Future<void> openGame() {
+    throw UnimplementedError('platformVersion() has not been implemented.');
+  }
+  Future<String?> sendData2Game(String data) {
+    throw UnimplementedError('platformVersion() has not been implemented.');
+  }
 }
