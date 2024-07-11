@@ -21,8 +21,18 @@ import org.godotengine.godot.plugin.SignalInfo
 import org.godotengine.godot.plugin.UsedByGodot
 
 
-class GodotPluginMaster(godot: Godot?, ) :  GodotPlugin(godot), EventChannel.StreamHandler /*MethodChannel.MethodCallHandler*/{
+import io.flutter.plugin.common.StandardMessageCodec
+import io.flutter.plugin.platform.PlatformView
+import io.flutter.plugin.platform.PlatformViewFactory
 
+class GodotPluginMaster: PlatformViewFactory(StandardMessageCodec.INSTANCE) {
+    override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
+        val creationParams = args as Map<String?, Any?>?
+        return GodotStarter(context, viewId, creationParams) //! FACTORY
+    }
+
+}
+/*
     private var eventSink: EventChannel.EventSink? = null
 
     private val EVENT_CHANNEL_NAME = "kaiyo.ezgodot/generic"
@@ -121,3 +131,4 @@ class GodotPluginMaster(godot: Godot?, ) :  GodotPlugin(godot), EventChannel.Str
 
 
 }
+*/

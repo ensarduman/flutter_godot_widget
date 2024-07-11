@@ -3,6 +3,8 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_godot_widget/flutter_godot_widget.dart';
+import 'package:flutter_godot_widget/gamewidget.dart';
+import 'package:flutter_godot_widget/viewPort.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,7 +24,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    //initPlatformState();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -50,7 +52,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
+      home: Gamewidget()
+      /*home: Scaffold(
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
@@ -73,7 +76,7 @@ class _MyAppState extends State<MyApp> {
           ],)
           
         ),
-      ),
+      ),*/
     );
   }
 }
