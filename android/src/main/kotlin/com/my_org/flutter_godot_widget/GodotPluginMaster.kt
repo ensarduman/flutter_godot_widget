@@ -24,13 +24,29 @@ import org.godotengine.godot.plugin.UsedByGodot
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
+import androidx.fragment.app.FragmentActivity
+import android.content.ContextWrapper
 
 class GodotPluginMaster: PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
         val creationParams = args as Map<String?, Any?>?
-        return GodotStarter(context, viewId, creationParams) //! FACTORY
+        println("Context in GodotPluginMaster: $context")
+        val activityContext = unwrapActivity(context)
+        println("Unwrapped activity: $activityContext")
+        return GodotStarter(activityContext, viewId, creationParams) //! FACTORY
     }
 
+    private fun unwrapActivity(context: Context): FragmentActivity {
+        var unwrappedContext = context
+        while (unwrappedContext is ContextWrapper) {
+            println("Unwrapping context: ${unwrappedContext.javaClass.name}, Base Context: ${unwrappedContext.baseContext?.javaClass?.name}")
+            if (unwrappedContext is FragmentActivity) {
+                return unwrappedContext
+            }
+            unwrappedContext = unwrappedContext.baseContext
+        }
+        throw IllegalStateException("Context is not a FragmentActivity : ${context.javaClass.name}")
+    }
 }
 /*
     private var eventSink: EventChannel.EventSink? = null

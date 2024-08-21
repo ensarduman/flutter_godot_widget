@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
+import 'dart:async';
 
 
 class Gamewidget extends StatefulWidget {
@@ -12,7 +13,12 @@ class Gamewidget extends StatefulWidget {
 }
 
 class _gamewidget extends State<Gamewidget> {
+  static const methodChannel = MethodChannel("com.kaiyo.ezgodot/method/start");
   bool _showNativeView = false;
+
+  final _eventStream = const EventChannel("kaiyo.ezgodot/generic");
+  StreamSubscription<dynamic>? _eventSubscription;
+
 
   @override
   Widget build(BuildContext context) {
@@ -33,25 +39,33 @@ class _gamewidget extends State<Gamewidget> {
               child: Text('Show Native View'),
             ),
             if (_showNativeView)
-              Container(
-                width: 300,
-                height: 300,
+              Flexible(
+              child:Container(
+                width: MediaQuery.of(context).size.width * 1.0,
+                // Width is 80% of screen width
+                height: MediaQuery.of(context).size.width * 1.0,
+                // Height is 80% of screen width
                 child: PlatformViewLink(
                   viewType: 'platform-view-type',
                   surfaceFactory: (context, controller) {
                     //Future.delayed(const Duration(seconds:9 ),(){
-
+                    print("SurfaceFactory called with controller: $controller");
                     return AndroidViewSurface(
                       controller: controller as AndroidViewController,
                       gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
                       hitTestBehavior: PlatformViewHitTestBehavior.opaque,
                     );
                    // });
-                  }, onCreatePlatformView: (PlatformViewCreationParams params) {
-                    return PlatformViewsService.initSurfaceAndroidView(id: params.id,
+                  },
+                  onCreatePlatformView: (PlatformViewCreationParams params) {
+                  print("PlatformView is being created with id: ${params.id}");
+                    final androidViewController =PlatformViewsService.initSurfaceAndroidView(
+                        id: params.id,
                       viewType: 'platform-view-type',
                       layoutDirection: TextDirection.ltr);
-
+                  androidViewController.create();
+                  print("PlatformView created with controller: $androidViewController");
+                  return androidViewController;
                   },
                   //nCreatePlatformView: (params) {
                     /*return PlatformViewsService.initSurfaceAndroidView(
@@ -66,9 +80,48 @@ class _gamewidget extends State<Gamewidget> {
                   //},
                 ),
               ),
+              )
           ],
+
         ),
       ),
     );
   }
+  Future<void> sendData2Game(String data) async {
+    try {
+      await methodChannel.invokeMethod("sendData2Godot", {"data": data});
+    } catch (e) {
+      print("Error sending data to native godot: $e");
+    }
+  }
+
+  void TakeString(){
+    String data="";
+    print("Function to take String and process it");
+    //send data to godot after processing
+    /*sendData2Game(data);*/
+  }
+
+  Stream<dynamic> networkStream(){return _eventStream.receiveBroadcastStream().distinct().map((dynamic event) {
+    debugPrint("flutter data $event");
+    return event;
+  });}
+
+  void startEvent(){
+
+    print("Started listening for events");
+    _eventSubscription=_eventStream.receiveBroadcastStream().listen((dynamic event) {
+      // Handle incoming events here
+      print('Received data from GD-Android: $event');
+      if (event == "TakeString") {
+        TakeString();
+      }
+      // Update UI or perform other actions based on the received event
+    }, onError: (error) {
+      // Handle any errors here
+      print('Error receiving data from GD-Android: $error');
+    });
+
+  }
+
 }

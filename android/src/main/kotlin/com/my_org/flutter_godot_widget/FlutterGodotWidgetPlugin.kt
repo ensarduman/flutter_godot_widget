@@ -9,9 +9,11 @@ import androidx.core.content.ContextCompat.startActivity
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import androidx.fragment.app.FragmentActivity
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
+
 
 
 import io.flutter.plugin.common.MethodCall
@@ -23,14 +25,18 @@ import io.flutter.plugin.common.MethodChannel.Result
 /** FlutterGodotWidgetPlugin */
 class FlutterGodotWidgetPlugin: FlutterPlugin { //! VIEW REGISTORING!!!!
     override fun onAttachedToEngine(binding: FlutterPluginBinding) {
-        binding
-                .platformViewRegistry
-                .registerViewFactory("platform-view-type", GodotPluginMaster())
+        println("in fluttergodotwidgetplugin")
+
+        binding.platformViewRegistry.registerViewFactory(
+                "platform-view-type",
+                GodotPluginMaster()
+        )
+
     }
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {}
 }
-  private lateinit var channel : MethodChannel
+  /*private lateinit var channel : MethodChannel
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_godot_widget")
@@ -72,5 +78,4 @@ class FlutterGodotWidgetPlugin: FlutterPlugin { //! VIEW REGISTORING!!!!
   override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
     channel.setMethodCallHandler(null)
   }
-}
-*/
+}*/
