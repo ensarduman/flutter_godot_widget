@@ -12,7 +12,7 @@ func _ready():
 		print("Yo we STARTED godot")
 
 	else: 
-		print("cloudnt find the plugin. THATS NOT GOOOD!!!!")
+		print("couldnt find the plugin. THATS NOT GOOOD!!!!")
 	pass # Replace with function body.
 
 

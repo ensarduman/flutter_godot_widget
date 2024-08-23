@@ -48,7 +48,7 @@ class GodotPluginMaster: PlatformViewFactory(StandardMessageCodec.INSTANCE) {
         throw IllegalStateException("Context is not a FragmentActivity : ${context.javaClass.name}")
     }
 }
-/*
+/*class oldCode(godot: Godot?, ): EventChannel.StreamHandler,GodotPlugin(godot){
     private var eventSink: EventChannel.EventSink? = null
 
     private val EVENT_CHANNEL_NAME = "kaiyo.ezgodot/generic"
