@@ -4,7 +4,6 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_godot_widget/flutter_godot_widget.dart';
 import 'package:flutter_godot_widget/gamewidget.dart';
-import 'package:flutter_godot_widget/viewPort.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,32 +50,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: Gamewidget()
-      /*home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Column(children: [
-
-          TextButton(onPressed:() async{
-
-              await _flutterGodotWidgetPlugin.openGame();
-              //await sendData2Game("GUY NAMED DAVE!");
-
-            }, child: Text("openGame")),
-          TextButton(onPressed:() async{
-
-              //await openGodot();
-              //await _flutterGodotWidgetPlugin.sendData2Game("Sent data from flutter");
-
-            }, child: Text("sendData2Game")),
-          Text('Running on: $_platformVersion\n'),
-          ],)
-          
-        ),
-      ),*/
+      
     );
   }
 }

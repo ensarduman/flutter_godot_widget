@@ -1,5 +1,4 @@
 
-'''
 
 @tool
 extends EditorPlugin
@@ -12,6 +11,7 @@ func _enter_tree():
 	# Initialization of the plugin goes here.
 	exportPlugin = AndroidExportPlugin.new()
 	add_export_plugin(exportPlugin)
+
 	print("added plug")
 	pass
 
@@ -24,7 +24,7 @@ func _exit_tree():
 
 
 class AndroidExportPlugin extends EditorExportPlugin:
-	var pluginName = "godotpluginMaster"
+	var pluginName = "godotP"
 	func _supports_platform(platform):
 		if platform is EditorExportPlatformAndroid:
 			print("we got the export")
@@ -34,9 +34,9 @@ class AndroidExportPlugin extends EditorExportPlugin:
 	func _get_android_libraries(platform, debug):
 		if debug:
 			print("is debug yo")
-			return PackedStringArray(["HelloWolrd/flutter_release-1.0.aar"])
+			return PackedStringArray(["flutter_release-1.0.aar"])
 		else: 
-			return PackedStringArray(["HelloWolrd/flutter_release-1.0.aar"])
+			return PackedStringArray(["flutter_release-1.0.aar"])
 	func _get_android_dependencies(platform, debug):
 			
 		if debug: # might need flutter dependancies????
@@ -48,4 +48,4 @@ class AndroidExportPlugin extends EditorExportPlugin:
 	func _get_name():
 		return pluginName
 	
-'''
+

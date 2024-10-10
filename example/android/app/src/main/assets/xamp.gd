@@ -4,7 +4,6 @@ var singleton
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	
 	if Engine.has_singleton("godotpluginMaster"):
 		singleton = Engine.get_singleton("godotpluginMaster")
 		singleton.connect("get_stang", examp) # this is what our get_stang is actually calling
@@ -23,9 +22,7 @@ func _process(delta):
 
 func _on_button_button_down():
 	print("btn was pressed")
-	if singleton:
-		singleton.sendData("got diz data")
-
+	singleton.sendData("data sent")
 	pass # Replace with function body.
 
 func examp(ourExampleTxt: String):

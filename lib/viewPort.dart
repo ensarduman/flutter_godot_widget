@@ -12,7 +12,7 @@ class ViewportGame extends StatefulWidget {
   State<ViewportGame> createState() => _ViewPortState();
 }
 class _ViewPortState extends State<ViewportGame> {
-  String _platformVersion = 'Unknown';
+  final String _platformVersion = 'Unknown';
   //final _flutterGodotWidgetPlugin = FlutterGodotWidget();
 
   @override
@@ -55,7 +55,7 @@ class _ViewPortState extends State<ViewportGame> {
     return Column(children: [
     ElevatedButton(onPressed: (){
     gamz.add(zz);
-    }, child: Text("bttn")),
+    }, child: const Text("bttn")),
     
     ],);
 

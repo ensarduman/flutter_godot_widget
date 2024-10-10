@@ -1,7 +1,7 @@
 package com.my_org.flutter_godot_widget
 
 import android.app.Activity
-import androidx.appcompat.app.AppCompatActivity
+
 
 import android.os.Bundle
 import android.os.Handler
@@ -44,7 +44,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import android.view.LayoutInflater;
-
+import io.flutter.embedding.android.FlutterFragmentActivity
+import org.godotengine.godot.plugin.GodotPlugin.emitSignal
+import org.godotengine.godot.plugin.SignalInfo
 
 
 /**
@@ -52,10 +54,10 @@ import android.view.LayoutInflater;
  */
 
 
-class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>?) : GodotHost, PlatformView,  EventChannel.StreamHandler {
+class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>?) : GodotHost, PlatformView {
 
 
-    private val godotFragment: GodotFragment = GodotFragment()
+    private var godotFragment: GodotFragment = GodotFragment()
     private val fragmentActivity: FragmentActivity = context as? FragmentActivity
             ?: throw IllegalStateException("Context must be an instance of FragmentActivity")
 
@@ -64,11 +66,9 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
     private var godotView: View? = null
 
 
-    private val networkEventChannel = "kaiyo.ezgodot/generic"
     private lateinit var eventChannel: EventChannel
-    private val METHOD_CHANNEL_NAME = "com.kaiyo.ezgodot/method/start"
     private var eventSink: EventChannel.EventSink? = null
-    /*private var appPlugin: MainActivity? = null*/
+    private var appPlugin: godotpluginMaster? = null
 
     private var methodChannel: MethodChannel? = null
     private lateinit var flutterEngine: FlutterEngine
@@ -89,6 +89,7 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
         transaction.add(godotFragment, "GodotFragment")
         transaction.commit()*/
         println("Initializinggodot")
+
         val fragmentManager: FragmentManager = fragmentActivity.supportFragmentManager
 
         fragmentManager.registerFragmentLifecycleCallbacks(object : FragmentLifecycleCallbacks() {
@@ -98,7 +99,7 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
                 if (f === godotFragment) {
                     // The view is now created
                     fragmentManager.unregisterFragmentLifecycleCallbacks(this)
-                    /*notifyFlutterViewReady()*/
+                    notifyFlutterViewReady()
                     viewReadyCallback?.invoke(v)
                     println("onfragmentviewcreated : fragment view is ready")
 
@@ -108,28 +109,35 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
 
         val transaction = fragmentManager.beginTransaction()
         println("godotfragment in initializegodot: $godotFragment")
-        transaction.add(godotFragment, "GodotFragment")
-        transaction.commitNow()
+        //val parent = fragmentActivity.findViewById<FrameLayout>(android.R.id.content)
+       // transaction.replace(R.id.content,godotFragment, "GodotFragment")
+        if(fragmentManager.fragments.indexOf(godotFragment)==-1) {
+            transaction.replace(android.R.id.content,godotFragment, "GodotFragment")
+            transaction.commitNowAllowingStateLoss()
+            getHostPlugins(godot)
+        }else{
+            transaction.replace(android.R.id.content,godotFragment, "GodotFragment")
+            transaction.commitNowAllowingStateLoss()
+        }
+
+       /* val currentGodotFragment = fragmentActivity.supportFragmentManager.findFragmentById(R.id.godot_fragment_container)
+        if (currentGodotFragment is GodotFragment) {
+            godotFragment = currentGodotFragment
+
+        } else {
+            godotFragment = GodotFragment()
+            fragmentManager.beginTransaction()
+                .replace(android.R.id.content, godotFragment)
+                .commitNowAllowingStateLoss()
+            getHostPlugins(godot)
+        }*/
+
     }
 
     override fun getActivity(): FragmentActivity {
         return fragmentActivity
     }
 
-    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-        eventSink = events
-        println("MainActivitytwo : EventSink set in onListen")
-        println("MainActivitytwo : EventSink: $eventSink")
-        Handler(Looper.getMainLooper()).post {
-            eventSink?.success("MainAcitivitytwo : Initial Data from onListen")
-        }
-        print("GodotStarter : Data sent via EventSink on onlisten")
-        /*initializegodot()*/
-    }
-    override fun onCancel(arguments: Any?) {
-        eventSink = null
-        println("MainActivitytwo : EventSink canceled")
-    }
 
 
 
@@ -150,54 +158,22 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
 
     override fun getView(): View { //! NATIVE
 
-        /*godotFragment?.view?.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                // Remove the listener after the first layout pass to avoid multiple calls
-                godotFragment?.view?.viewTreeObserver.removeOnGlobalLayoutListener(this)
-
-                // Log the width and height of the Godot view
-                val width = godotFragment?.view?.width
-                val height = godotFragment?.view?.height
-                Log.d("GodotViewSize", "Godot view size: width=$width, height=$height")
-            }
-        })*/
-
-        /*val redView = View(fragmentActivity)
-        redView.setBackgroundColor(Color.RED)
-        val layoutParams = FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-        )
-        redView.layoutParams = layoutParams
-        // Ensure that the view is added to a valid parent container
-        val parent = fragmentActivity.findViewById<FrameLayout>(android.R.id.content)
-        parent?.addView(redView)
-        Log.d("GodotStarter", "Red view created and added to the parent")
-
-        return redView*/
-
-        /*initializegodot()*/
-        /*print("Should be Working?")
-        print(godotFragment.godot)
-        print("Should be sending odd godot shit???")
-        return godotFragment.view ?: throw IllegalStateException("Fragment view is not yet created")*/
-        /*if (godotFragment.view == null) {
-            throw IllegalStateException("Fragment view is not yet created")
-        }
-        return godotFragment.view!!*/
+       
 
         Log.d("GodotStarter", "getView called")
 
-        return if (godotFragment.view != null) {
+       return if (godotFragment.view != null) {
             Log.d("GodotStarter", "Returning existing view")
-            val parent = fragmentActivity.findViewById<FrameLayout>(android.R.id.content)
-             godotFragment.view?.let { existingView ->
+            //val parent = fragmentActivity.supportFragmentManager.findFragmentById(R.id.godot_fragment_container)?.view
+           val parent = fragmentActivity.findViewById<FrameLayout>(android.R.id.content)
+           godotFragment.view?.let { existingView ->
                  existingView.parent?.let { parent ->
                      // Remove the view from its current parent if it already has one
                      (parent as? ViewGroup)?.removeView(existingView)
+                     //(parent as? ViewGroup)?.removeAllViews()
                      Log.d("$existingView", "removed")
                  }
-                 parent?.addView(godotFragment.view)
+               (parent as? ViewGroup)?.addView(godotFragment.view)
              }
 
             Log.d("GodotStarter", "Red view created and added to the parent")
@@ -214,19 +190,25 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
             }
         }
 
+
     }
-    /*private fun initAppPluginIfNeeded(godot: Godot) {
+    private fun initAppPluginIfNeeded(godot: Godot) {
         if (appPlugin == null) {
-            appPlugin = GodotpluginMaster(godot)
-            appPlugin?.setEventSink(eventSink)
+            appPlugin = godotpluginMaster(godot)
+            //appPlugin?.setEventSink(godotpluginMaster)
         }
+        else{println("we got plugin")}
     }
 
+    lateinit var handler: Handler
 
     override fun getHostPlugins(godot: Godot): Set<GodotPlugin> {
+        super.getHostPlugins(godot)
+        Log.d("GodotStarter", "getHostPlugins called")
         initAppPluginIfNeeded(godot)
+
         return setOf(appPlugin!!)
-    }*/
+    }
 
     private fun handleMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {

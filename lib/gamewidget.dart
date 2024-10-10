@@ -8,6 +8,8 @@ import 'dart:async';
 
 
 class Gamewidget extends StatefulWidget {
+  const Gamewidget({super.key});
+
   @override
   _gamewidget createState() => _gamewidget();
 }
@@ -22,9 +24,19 @@ class _gamewidget extends State<Gamewidget> {
 
   @override
   Widget build(BuildContext context) {
+    
+    //_eventStream.receiveBroadcastStream().distinct().map((dynamic event) {
+    //  
+    //}).listen;
+    _eventStream.receiveBroadcastStream().listen((event) {
+      print("flutter data $event");
+      
+      });
+
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('PlatformView Example'),
+        title: const Text('PlatformView Example'),
       ),
       body: Center(
         child: Column(
@@ -36,11 +48,11 @@ class _gamewidget extends State<Gamewidget> {
                   _showNativeView = true;
                 });
               },
-              child: Text('Show Native View'),
+              child: const Text('Show Native View'),
             ),
             if (_showNativeView)
               Flexible(
-              child:Container(
+              child:SizedBox( // does this mean it's technically not full screen, and I can put it in the chatrooms!!!?!?!?
                 width: MediaQuery.of(context).size.width * 1.0,
                 // Width is 80% of screen width
                 height: MediaQuery.of(context).size.width * 1.0,
@@ -103,7 +115,7 @@ class _gamewidget extends State<Gamewidget> {
   }
 
   Stream<dynamic> networkStream(){return _eventStream.receiveBroadcastStream().distinct().map((dynamic event) {
-    debugPrint("flutter data $event");
+    debugPrint("flutter data: $event");
     return event;
   });}
 
