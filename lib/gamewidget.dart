@@ -18,8 +18,18 @@ class _gamewidget extends State<Gamewidget> {
   static const methodChannel = MethodChannel("com.kaiyo.ezgodot/method/start");
   bool _showNativeView = false;
 
+  double _width = 300.0; // Default width for resizable widget
+  double _height = 300.0; // Default height for resizable widget
+
   final _eventStream = const EventChannel("kaiyo.ezgodot/generic");
   StreamSubscription<dynamic>? _eventSubscription;
+
+
+  @override
+  void initState() {
+    super.initState();
+    startEvent();
+  }
 
 
   @override
@@ -28,10 +38,10 @@ class _gamewidget extends State<Gamewidget> {
     //_eventStream.receiveBroadcastStream().distinct().map((dynamic event) {
     //  
     //}).listen;
-    _eventStream.receiveBroadcastStream().listen((event) {
+    /*_eventStream.receiveBroadcastStream().listen((event) {
       print("flutter data $event");
       
-      });
+      });*/
 
 
     return Scaffold(
@@ -51,12 +61,22 @@ class _gamewidget extends State<Gamewidget> {
               child: const Text('Show Native View'),
             ),
             if (_showNativeView)
-              Flexible(
-              child:SizedBox( // does this mean it's technically not full screen, and I can put it in the chatrooms!!!?!?!?
-                width: MediaQuery.of(context).size.width * 1.0,
-                // Width is 80% of screen width
-                height: MediaQuery.of(context).size.width * 1.0,
-                // Height is 80% of screen width
+    Column(
+      children: [
+        GestureDetector(
+          onPanUpdate: (details) {
+            // Update the width and height when the user drags to resize
+            setState(() {
+              _width += details.delta.dx;
+              _height += details.delta.dy;
+
+              _width = _width.clamp(100.0, MediaQuery.of(context).size.width - 20);
+              _height = _height.clamp(100.0, MediaQuery.of(context).size.height - 20);
+            });
+          },
+          child: SizedBox(
+            width: _width,
+            height: _height,
                 child: PlatformViewLink(
                   viewType: 'platform-view-type',
                   surfaceFactory: (context, controller) {
@@ -92,11 +112,14 @@ class _gamewidget extends State<Gamewidget> {
                   //},
                 ),
               ),
-              )
+              ),
+
           ],
 
         ),
+    ]
       ),
+    ),
     );
   }
   Future<void> sendData2Game(String data) async {
@@ -114,18 +137,26 @@ class _gamewidget extends State<Gamewidget> {
     /*sendData2Game(data);*/
   }
 
-  Stream<dynamic> networkStream(){return _eventStream.receiveBroadcastStream().distinct().map((dynamic event) {
+  /*Stream<dynamic> networkStream(){return _eventStream.receiveBroadcastStream().distinct().map((dynamic event) {
     debugPrint("flutter data: $event");
     return event;
-  });}
+
+  });}*/
 
   void startEvent(){
 
-    print("Started listening for events");
+    print("Started listening for events in SE");
     _eventSubscription=_eventStream.receiveBroadcastStream().listen((dynamic event) {
       // Handle incoming events here
       print('Received data from GD-Android: $event');
-      if (event == "TakeString") {
+      if (event == "close_view") {
+        // Hide the native view and show the Flutter view again
+        setState(() {
+          _showNativeView = false;
+        });
+      }
+
+      else if (event == "TakeString") {
         TakeString();
       }
       // Update UI or perform other actions based on the received event
@@ -135,5 +166,13 @@ class _gamewidget extends State<Gamewidget> {
     });
 
   }
+
+  @override
+  void dispose() {
+    // Cancel the subscription when the widget is disposed
+    _eventSubscription?.cancel();
+    super.dispose();
+  }
+
 
 }

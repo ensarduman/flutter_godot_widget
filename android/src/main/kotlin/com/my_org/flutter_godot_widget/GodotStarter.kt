@@ -82,12 +82,7 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
 
 
     private fun initializegodot(){
-        /*println("Initializinggodot")
-        val fragmentManager: FragmentManager = fragmentActivity.supportFragmentManager
-        val transaction = fragmentManager.beginTransaction()
-        print("godotfragment in initializegodot: $godotFragment")
-        transaction.add(godotFragment, "GodotFragment")
-        transaction.commit()*/
+        
         println("Initializinggodot")
 
         val fragmentManager: FragmentManager = fragmentActivity.supportFragmentManager
@@ -120,17 +115,6 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
             transaction.commitNowAllowingStateLoss()
         }
 
-       /* val currentGodotFragment = fragmentActivity.supportFragmentManager.findFragmentById(R.id.godot_fragment_container)
-        if (currentGodotFragment is GodotFragment) {
-            godotFragment = currentGodotFragment
-
-        } else {
-            godotFragment = GodotFragment()
-            fragmentManager.beginTransaction()
-                .replace(android.R.id.content, godotFragment)
-                .commitNowAllowingStateLoss()
-            getHostPlugins(godot)
-        }*/
 
     }
 

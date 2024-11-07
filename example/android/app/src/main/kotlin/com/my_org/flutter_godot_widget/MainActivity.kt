@@ -51,7 +51,7 @@ class MainActivity: FlutterFragmentActivity()/*,GodotPlugin(godot)*/, EventChann
     @UsedByGodot
     public fun sendData(mydata: String) { // send to flutter
         faf = mydata
-        println("OLD lord of Data: " + faf)
+        println("OLD lord of Data: MA " + faf)
         if (eventSink != null) {
             Handler(Looper.getMainLooper()).post {
                 eventSink?.success(faf)
@@ -62,6 +62,10 @@ class MainActivity: FlutterFragmentActivity()/*,GodotPlugin(godot)*/, EventChann
         }
 
     }
+
+
+
+
     fun is_event_sink_ready(): Boolean {
         return eventSink != null
     }

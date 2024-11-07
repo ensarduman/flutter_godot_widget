@@ -25,6 +25,14 @@ func _on_button_button_down():
 	singleton.sendData("data sent")
 	pass # Replace with function body.
 
+func _on_BackButton_pressed():
+	print("Back button pressed!.")
+	# Send a message to Flutter to close Godot and return to the Flutter view
+	if singleton:
+		print("singleton yes")
+		singleton.GoBack()
+
+
 func examp(ourExampleTxt: String):
 	#emit_signal("FlutterData", ourExampleTxt)
 	#we send our flutter data to here

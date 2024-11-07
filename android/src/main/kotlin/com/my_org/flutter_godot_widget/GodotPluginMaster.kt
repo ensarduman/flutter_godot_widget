@@ -74,13 +74,23 @@ public class godotpluginMaster(godot: Godot?) :  GodotPlugin(godot), EventChanne
     public fun sendData(string:String) { // send to flutter
         faf = string
 
-        println("OLD lord of Data: " + faf)
+        println("OLD lord of Data: GPM " + faf)
         runOnUiThread({
             eventSink?.success(faf)
         })
+        GoBack()
 
 
     }
+    @UsedByGodot
+    public fun GoBack() {
+        println("goback called")
+        runOnUiThread {
+            eventSink?.success("close_view")  // Send a specific message to Flutter to close the view
+        }
+    }
+
+
 
     fun setEventSink(eventSinkl: EventChannel.EventSink?) {
         eventSink = eventSinkl

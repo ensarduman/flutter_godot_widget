@@ -12,4 +12,11 @@ offset_left = -90.0
 offset_right = 90.0
 offset_bottom = 94.0
 
+[node name="BackButton" type="Button" parent="."]
+text = "Back"
+offset_left = -800.0
+offset_right = -400.0
+offset_bottom = 94.0
+
+[connection signal="pressed" from="BackButton" to="." method="_on_BackButton_pressed"]
 [connection signal="button_down" from="Button" to="." method="_on_button_button_down"]
