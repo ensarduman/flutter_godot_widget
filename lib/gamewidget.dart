@@ -58,7 +58,7 @@ class _gamewidget extends State<Gamewidget> {
                   _showNativeView = true;
                 });
               },
-              child: const Text('Show Native View'),
+              child: const Text('Show Godot View'),
             ),
             if (_showNativeView)
     Column(

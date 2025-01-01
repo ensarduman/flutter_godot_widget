@@ -44,6 +44,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import android.view.LayoutInflater;
+import androidx.fragment.app.FragmentTransaction
 import io.flutter.embedding.android.FlutterFragmentActivity
 import org.godotengine.godot.plugin.GodotPlugin.emitSignal
 import org.godotengine.godot.plugin.SignalInfo
@@ -102,7 +103,7 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
             }
         }, false)
 
-        val transaction = fragmentManager.beginTransaction()
+        /*val transaction = fragmentManager.beginTransaction()
         println("godotfragment in initializegodot: $godotFragment")
         //val parent = fragmentActivity.findViewById<FrameLayout>(android.R.id.content)
        // transaction.replace(R.id.content,godotFragment, "GodotFragment")
@@ -114,8 +115,19 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
             transaction.replace(android.R.id.content,godotFragment, "GodotFragment")
             transaction.commitNowAllowingStateLoss()
         }
+*/
+        // Check if the Godot fragment exists
+        val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
+        val godotFragmentOld = fragmentManager.findFragmentByTag("GodotFragment") as? GodotFragment
 
-
+        if (godotFragmentOld == null) {
+            godotFragment = GodotFragment()
+            fragmentTransaction.add(android.R.id.content, godotFragment, "GodotFragment")
+            fragmentTransaction.commitNowAllowingStateLoss()
+            getHostPlugins(godot)
+        }else{
+            godotFragment = godotFragmentOld
+        }
     }
 
     override fun getActivity(): FragmentActivity {
