@@ -7,11 +7,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:flutter_godot_widget_example/main.dart';
+import 'package:leak_tracker/leak_tracker.dart';
 
 void main() {
   testWidgets('Verify Platform version', (WidgetTester tester) async {
+    // we wanna check and see if we have any leaks in our system
+    // 99% of leaks will be on the native side, idk if this will help us tbh
+    LeakTracking.start();
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());
 
@@ -24,4 +26,5 @@ void main() {
       findsOneWidget,
     );
   });
+  LeakTracking.stop();
 }
