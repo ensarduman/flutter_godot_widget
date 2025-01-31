@@ -30,29 +30,11 @@ class _ViewPortState extends State<ViewportGame> {
     var zz = SizedBox(
       width: 300, // Set the desired width
       height: 300, // Set the desired height
-      child: PlatformViewLink(
+      child: AndroidView(
         viewType: viewType,
-        surfaceFactory: (context, controller) {
-          return AndroidViewSurface(
-            controller: controller as AndroidViewController,
-            gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-          );
-        },
-        onCreatePlatformView: (params) {
-          return PlatformViewsService.initSurfaceAndroidView(
-            id: params.id,
-            viewType: viewType,
-            layoutDirection: TextDirection.ltr,
-            creationParams: creationParams,
-            creationParamsCodec: const StandardMessageCodec(),
-            onFocus: () {
-              params.onFocusChanged(true);
-            },
-          )
-            ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
-            ..create();
-        },
+        layoutDirection: TextDirection.ltr,
+        creationParams: creationParams,
+        creationParamsCodec: const StandardMessageCodec(),
       ),
     );
 

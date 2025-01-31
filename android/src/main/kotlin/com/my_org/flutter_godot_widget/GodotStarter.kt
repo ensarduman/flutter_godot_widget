@@ -159,13 +159,15 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
             Log.d("GodotStarter", "Returning existing view")
             val parent = fragmentActivity.findViewById<FrameLayout>(android.R.id.content)
             godotFragment.view?.let { existingView ->
-                existingView.parent?.let { parent ->
-                    (parent as? ViewGroup)?.removeView(existingView)
+                if (existingView.parent != null) {
+                    (existingView.parent as? ViewGroup)?.removeView(existingView)
                 }
-                (parent as? ViewGroup)?.addView(godotFragment.view)
+                if (existingView.parent == null) {
+                    (parent as? ViewGroup)?.addView(godotFragment.view)
+                }
                 existingView.layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
+                    ViewGroup.LayoutParams.MATCH_PARENT, // Set the desired width
+                    ViewGroup.LayoutParams.MATCH_PARENT  // Set the desired height
                 )
             }
             Log.d("GodotStarter", "View created and added to the parent")
@@ -174,11 +176,15 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
             Log.d("GodotStarter", "Returning placeholder view, waiting for actual view to be ready")
             View(fragmentActivity).also { placeholder ->
                 viewReadyCallback = { actualView ->
-                    (placeholder.parent as? ViewGroup)?.removeView(placeholder)
-                    (placeholder.parent as? ViewGroup)?.addView(actualView)
+                    if (placeholder.parent != null) {
+                        (placeholder.parent as? ViewGroup)?.removeView(placeholder)
+                    }
+                    if (actualView.parent == null) {
+                        (placeholder.parent as? ViewGroup)?.addView(actualView)
+                    }
                     actualView.layoutParams = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
+                        ViewGroup.LayoutParams.MATCH_PARENT, // Set the desired width
+                        ViewGroup.LayoutParams.MATCH_PARENT  // Set the desired height
                     )
                     Log.d("GodotStarter", "Actual view is now added to the parent view group")
                 }

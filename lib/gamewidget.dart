@@ -78,27 +78,11 @@ class _gamewidget extends State<Gamewidget> {
                     child: SizedBox(
                       width: _width,
                       height: _height,
-                      child: PlatformViewLink(
+                      child: AndroidView(
                         viewType: 'platform-view-type',
-                        surfaceFactory: (context, controller) {
-                          print("SurfaceFactory called with controller: $controller");
-                          return AndroidViewSurface(
-                            controller: controller as AndroidViewController,
-                            gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-                            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-                          );
-                        },
-                        onCreatePlatformView: (PlatformViewCreationParams params) {
-                          print("PlatformView is being created with id: ${params.id}");
-                          final androidViewController = PlatformViewsService.initSurfaceAndroidView(
-                            id: params.id,
-                            viewType: 'platform-view-type',
-                            layoutDirection: TextDirection.ltr,
-                          );
-                          androidViewController.create();
-                          print("PlatformView created with controller: $androidViewController");
-                          return androidViewController;
-                        },
+                        layoutDirection: TextDirection.ltr,
+                        creationParams: <String, dynamic>{},
+                        creationParamsCodec: const StandardMessageCodec(),
                       ),
                     ),
                   ),
