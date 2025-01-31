@@ -49,77 +49,64 @@ class _gamewidget extends State<Gamewidget> {
         title: const Text('PlatformView Example'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _showNativeView = true;
-                });
-              },
-              child: const Text('Show Godot View'),
-            ),
-            if (_showNativeView)
-    Column(
-      children: [
-        GestureDetector(
-          onPanUpdate: (details) {
-            // Update the width and height when the user drags to resize
-            setState(() {
-              _width += details.delta.dx;
-              _height += details.delta.dy;
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _showNativeView = true;
+                  });
+                },
+                child: const Text('Show Godot View'),
+              ),
+              if (_showNativeView)
+                Padding(
+                  padding: const EdgeInsets.all(16.0), // Add padding around the view
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      // Update the width and height when the user drags to resize
+                      setState(() {
+                        _width += details.delta.dx;
+                        _height += details.delta.dy;
 
-              _width = _width.clamp(100.0, MediaQuery.of(context).size.width - 20);
-              _height = _height.clamp(100.0, MediaQuery.of(context).size.height - 20);
-            });
-          },
-          child: SizedBox(
-            width: _width,
-            height: _height,
-                child: PlatformViewLink(
-                  viewType: 'platform-view-type',
-                  surfaceFactory: (context, controller) {
-                    //Future.delayed(const Duration(seconds:9 ),(){
-                    print("SurfaceFactory called with controller: $controller");
-                    return AndroidViewSurface(
-                      controller: controller as AndroidViewController,
-                      gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-                      hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-                    );
-                   // });
-                  },
-                  onCreatePlatformView: (PlatformViewCreationParams params) {
-                  print("PlatformView is being created with id: ${params.id}");
-                    final androidViewController =PlatformViewsService.initSurfaceAndroidView(
-                        id: params.id,
-                      viewType: 'platform-view-type',
-                      layoutDirection: TextDirection.ltr);
-                  androidViewController.create();
-                  print("PlatformView created with controller: $androidViewController");
-                  return androidViewController;
-                  },
-                  //nCreatePlatformView: (params) {
-                    /*return PlatformViewsService.initSurfaceAndroidView(
-                      id: params.id,
-                      viewType: 'platform-view-type',
-                      layoutDirection: TextDirection.ltr,
-                      creationParams: null,
-                      creationParamsCodec: StandardMessageCodec(),
-                    )
-                      ..create();*/
-                  //    print("jh");
-                  //},
+                        _width = _width.clamp(100.0, MediaQuery.of(context).size.width - 20);
+                        _height = _height.clamp(100.0, MediaQuery.of(context).size.height - 20);
+                      });
+                    },
+                    child: SizedBox(
+                      width: _width,
+                      height: _height,
+                      child: PlatformViewLink(
+                        viewType: 'platform-view-type',
+                        surfaceFactory: (context, controller) {
+                          print("SurfaceFactory called with controller: $controller");
+                          return AndroidViewSurface(
+                            controller: controller as AndroidViewController,
+                            gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
+                            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+                          );
+                        },
+                        onCreatePlatformView: (PlatformViewCreationParams params) {
+                          print("PlatformView is being created with id: ${params.id}");
+                          final androidViewController = PlatformViewsService.initSurfaceAndroidView(
+                            id: params.id,
+                            viewType: 'platform-view-type',
+                            layoutDirection: TextDirection.ltr,
+                          );
+                          androidViewController.create();
+                          print("PlatformView created with controller: $androidViewController");
+                          return androidViewController;
+                        },
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              ),
-
-          ],
-
+            ],
+          ),
         ),
-    ]
       ),
-    ),
     );
   }
   Future<void> sendData2Game(String data) async {
