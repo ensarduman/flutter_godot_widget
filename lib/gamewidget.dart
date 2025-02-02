@@ -91,8 +91,8 @@ class _gamewidget extends State<Gamewidget> {
                         viewType: 'platform-view-type',
                         layoutDirection: TextDirection.ltr,
                         creationParams: <String, dynamic>{
-                          'width': _width,
-                          'height': _height,
+                          'width': widget.width,
+                          'height': widget.height,
                         },
                         creationParamsCodec: const StandardMessageCodec(),
                       ),
