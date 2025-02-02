@@ -52,7 +52,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Gamewidget(
-        height: 500, // Optional height parameter
+        width: 200, // Optional width parameter
+        height: 200, // Optional height parameter
+        x: 300, // Optional x parameter
+        y: 500, // Optional y parameter
       ),
     );
   }

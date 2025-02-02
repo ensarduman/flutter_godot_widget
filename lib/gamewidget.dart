@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +12,15 @@ import 'dart:async';
 class Gamewidget extends StatefulWidget {
   final double? width;
   final double? height;
+  final double? x;
+  final double? y;
 
   const Gamewidget({
     super.key,
     this.width,
     this.height,
+    this.x,
+    this.y,
   });
 
   @override
@@ -93,6 +99,8 @@ class _gamewidget extends State<Gamewidget> {
                         creationParams: <String, dynamic>{
                           'width': widget.width,
                           'height': widget.height,
+                          'x': widget.x,
+                          'y': widget.y,
                         },
                         creationParamsCodec: const StandardMessageCodec(),
                       ),
