@@ -81,6 +81,7 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
     private var height: Int? = null;
     private var x: Float? = null;
     private var y: Float? = null;
+    private var gravity_value: Int? = null;
 
 
     init {
@@ -89,6 +90,7 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
         height = (creationParams?.get("height") as? Double)?.toInt()
         x = (creationParams?.get("x") as? Number)?.toFloat()
         y = (creationParams?.get("y") as? Number)?.toFloat()
+        gravity_value = (creationParams?.get("gravity") as? Number)?.toInt()
         initializegodot()
     }
 
@@ -179,9 +181,11 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
                     width ?: FrameLayout.LayoutParams.MATCH_PARENT, // Set the desired width
                     height ?: FrameLayout.LayoutParams.MATCH_PARENT  // Set the desired height
                 ).apply {
-                    gravity = Gravity.CENTER
+                    if (gravity_value != null) {
+                        gravity = gravity_value!!
+                    }
                 }
-                
+
                 if (x != null)
                 {
                     existingView.x = (x ?: 0) as Float

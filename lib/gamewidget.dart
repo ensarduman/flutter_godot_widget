@@ -8,12 +8,15 @@ import 'package:flutter/services.dart';
 
 import 'dart:async';
 
+import 'package:flutter_godot_widget/gravity.dart';
+
 
 class Gamewidget extends StatefulWidget {
   final double? width;
   final double? height;
   final double? x;
   final double? y;
+  final Gravity? gravity;
 
   const Gamewidget({
     super.key,
@@ -21,6 +24,7 @@ class Gamewidget extends StatefulWidget {
     this.height,
     this.x,
     this.y,
+    this.gravity,
   });
 
   @override
@@ -101,6 +105,7 @@ class _gamewidget extends State<Gamewidget> {
                           'height': widget.height,
                           'x': widget.x,
                           'y': widget.y,
+                          'gravity': widget.gravity?.value,
                         },
                         creationParamsCodec: const StandardMessageCodec(),
                       ),

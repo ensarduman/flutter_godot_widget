@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_godot_widget/flutter_godot_widget.dart';
 import 'package:flutter_godot_widget/gamewidget.dart';
+import 'package:flutter_godot_widget/gravity.dart';
 
 void main() {
   runApp(const MyApp());
@@ -54,8 +55,9 @@ class _MyAppState extends State<MyApp> {
       home: Gamewidget(
         width: 200, // Optional width parameter
         height: 200, // Optional height parameter
-        // x: 300, // Optional x parameter
-        // y: 500, // Optional y parameter
+        x: 10, // Optional x parameter
+        y: 20, // Optional y parameter
+        gravity: Gravity.CENTER,
       ),
     );
   }
