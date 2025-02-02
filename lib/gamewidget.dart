@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -6,9 +8,24 @@ import 'package:flutter/services.dart';
 
 import 'dart:async';
 
+import 'package:flutter_godot_widget/gravity.dart';
+
 
 class Gamewidget extends StatefulWidget {
-  const Gamewidget({super.key});
+  final double? width;
+  final double? height;
+  final double? x;
+  final double? y;
+  final Gravity? gravity;
+
+  const Gamewidget({
+    super.key,
+    this.width,
+    this.height,
+    this.x,
+    this.y,
+    this.gravity,
+  });
 
   @override
   _gamewidget createState() => _gamewidget();
@@ -34,7 +51,9 @@ class _gamewidget extends State<Gamewidget> {
 
   @override
   Widget build(BuildContext context) {
-    
+    double _width = widget.width ?? 300.0; // Use the passed width or default to 300.0
+    double _height = widget.height ?? 300.0; // Use the passed height or default to 300.0
+
     //_eventStream.receiveBroadcastStream().distinct().map((dynamic event) {
     //  
     //}).listen;
@@ -49,77 +68,54 @@ class _gamewidget extends State<Gamewidget> {
         title: const Text('PlatformView Example'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _showNativeView = true;
-                });
-              },
-              child: const Text('Show Godot View'),
-            ),
-            if (_showNativeView)
-    Column(
-      children: [
-        GestureDetector(
-          onPanUpdate: (details) {
-            // Update the width and height when the user drags to resize
-            setState(() {
-              _width += details.delta.dx;
-              _height += details.delta.dy;
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _showNativeView = true;
+                  });
+                },
+                child: const Text('Show Godot View'),
+              ),
+              if (_showNativeView)
+                Padding(
+                  padding: const EdgeInsets.all(16.0), // Add padding around the view
+                  child: GestureDetector(
+                    onPanUpdate: (details) {
+                      // Update the width and height when the user drags to resize
+                      setState(() {
+                        _width += details.delta.dx;
+                        _height += details.delta.dy;
 
-              _width = _width.clamp(100.0, MediaQuery.of(context).size.width - 20);
-              _height = _height.clamp(100.0, MediaQuery.of(context).size.height - 20);
-            });
-          },
-          child: SizedBox(
-            width: _width,
-            height: _height,
-                child: PlatformViewLink(
-                  viewType: 'platform-view-type',
-                  surfaceFactory: (context, controller) {
-                    //Future.delayed(const Duration(seconds:9 ),(){
-                    print("SurfaceFactory called with controller: $controller");
-                    return AndroidViewSurface(
-                      controller: controller as AndroidViewController,
-                      gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-                      hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-                    );
-                   // });
-                  },
-                  onCreatePlatformView: (PlatformViewCreationParams params) {
-                  print("PlatformView is being created with id: ${params.id}");
-                    final androidViewController =PlatformViewsService.initSurfaceAndroidView(
-                        id: params.id,
-                      viewType: 'platform-view-type',
-                      layoutDirection: TextDirection.ltr);
-                  androidViewController.create();
-                  print("PlatformView created with controller: $androidViewController");
-                  return androidViewController;
-                  },
-                  //nCreatePlatformView: (params) {
-                    /*return PlatformViewsService.initSurfaceAndroidView(
-                      id: params.id,
-                      viewType: 'platform-view-type',
-                      layoutDirection: TextDirection.ltr,
-                      creationParams: null,
-                      creationParamsCodec: StandardMessageCodec(),
-                    )
-                      ..create();*/
-                  //    print("jh");
-                  //},
+                        _width = _width.clamp(100.0, MediaQuery.of(context).size.width - 20);
+                        _height = _height.clamp(100.0, MediaQuery.of(context).size.height - 20);
+                      });
+                    },
+                    child: SizedBox(
+                      width: _width,
+                      height: _height,
+                      child: AndroidView(
+                        viewType: 'platform-view-type',
+                        layoutDirection: TextDirection.ltr,
+                        creationParams: <String, dynamic>{
+                          'width': widget.width,
+                          'height': widget.height,
+                          'x': widget.x,
+                          'y': widget.y,
+                          'gravity': widget.gravity?.value,
+                        },
+                        creationParamsCodec: const StandardMessageCodec(),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              ),
-
-          ],
-
+            ],
+          ),
         ),
-    ]
       ),
-    ),
     );
   }
   Future<void> sendData2Game(String data) async {
