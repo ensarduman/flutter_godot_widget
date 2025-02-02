@@ -165,9 +165,9 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
                 if (existingView.parent == null) {
                     (parent as? ViewGroup)?.addView(godotFragment.view)
                 }
-                existingView.layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, // Set the desired width
-                    ViewGroup.LayoutParams.MATCH_PARENT  // Set the desired height
+                existingView.layoutParams = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT, // Set the desired width
+                    FrameLayout.LayoutParams.MATCH_PARENT  // Set the desired height
                 )
             }
             Log.d("GodotStarter", "View created and added to the parent")
@@ -182,9 +182,9 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
                     if (actualView.parent == null) {
                         (placeholder.parent as? ViewGroup)?.addView(actualView)
                     }
-                    actualView.layoutParams = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, // Set the desired width
-                        ViewGroup.LayoutParams.MATCH_PARENT  // Set the desired height
+                    actualView.layoutParams = FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT, // Set the desired width
+                        FrameLayout.LayoutParams.MATCH_PARENT  // Set the desired height
                     )
                     Log.d("GodotStarter", "Actual view is now added to the parent view group")
                 }
