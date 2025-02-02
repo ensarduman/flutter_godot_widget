@@ -178,12 +178,10 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
                 existingView.layoutParams = FrameLayout.LayoutParams(
                     width ?: FrameLayout.LayoutParams.MATCH_PARENT, // Set the desired width
                     height ?: FrameLayout.LayoutParams.MATCH_PARENT  // Set the desired height
-                )
-                    //.apply {
-                    //gravity = Gravity.START
-                //}
-                Log.d("GodotStarter", "X: ${(x ?: -1)}, Y: ${(y ?: -1)}")
-
+                ).apply {
+                    gravity = Gravity.CENTER
+                }
+                
                 if (x != null)
                 {
                     existingView.x = (x ?: 0) as Float

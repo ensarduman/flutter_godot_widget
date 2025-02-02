@@ -54,8 +54,8 @@ class _MyAppState extends State<MyApp> {
       home: Gamewidget(
         width: 200, // Optional width parameter
         height: 200, // Optional height parameter
-        x: 300, // Optional x parameter
-        y: 500, // Optional y parameter
+        // x: 300, // Optional x parameter
+        // y: 500, // Optional y parameter
       ),
     );
   }
