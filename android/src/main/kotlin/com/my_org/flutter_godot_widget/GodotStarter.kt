@@ -1,5 +1,7 @@
 package com.my_org.flutter_godot_widget
 
+import android.R.integer
+import android.app.ActionBar
 import android.app.Activity
 
 
@@ -75,18 +77,22 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
     private var methodChannel: MethodChannel? = null
     private lateinit var flutterEngine: FlutterEngine
 
+    private var width: Int? = null;
+    private var height: Int? = null;
+    private var x: Float? = null;
+    private var y: Float? = null;
+
 
     init {
         println("init called in godotstarter")
+        width = (creationParams?.get("width") as? Double)?.toInt()
+        height = (creationParams?.get("height") as? Double)?.toInt()
+        x = creationParams?.get("x") as? Float
+        y = creationParams?.get("y") as? Float
         initializegodot()
     }
 
-
-
-    private fun initializegodot(){
-        
-        println("Initializinggodot")
-
+    private fun initializegodot() {
         val fragmentManager: FragmentManager = fragmentActivity.supportFragmentManager
 
         fragmentManager.registerFragmentLifecycleCallbacks(object : FragmentLifecycleCallbacks() {
@@ -166,15 +172,26 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
                 if (existingView.parent == null) {
                     (parent as? ViewGroup)?.addView(godotFragment.view)
                 }
+
+                Log.d("GodotStarter", "Width: ${(width ?: -1)}, Height: ${(height ?: -1)}")
+
                 existingView.layoutParams = FrameLayout.LayoutParams(
-                    300, // Set the desired width
-                    300  // Set the desired height
-                ).apply {
-                    gravity = Gravity.START
+                    width ?: FrameLayout.LayoutParams.MATCH_PARENT, // Set the desired width
+                    height ?: FrameLayout.LayoutParams.MATCH_PARENT  // Set the desired height
+                )
+                    //.apply {
+                    //gravity = Gravity.START
+                //}
+
+                if (x != null)
+                {
+                    existingView.x = (x ?: 0) as Float
                 }
 
-                existingView.x = 400f
-                existingView.y = 400f
+                if (y != null)
+                {
+                    existingView.y = (y ?: 0) as Float
+                }
 
             }
 

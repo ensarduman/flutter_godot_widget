@@ -50,9 +50,11 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Gamewidget()
-      
+    return MaterialApp(
+      home: Gamewidget(
+        width: 500, // Optional width parameter
+        height: 500, // Optional height parameter
+      ),
     );
   }
 }

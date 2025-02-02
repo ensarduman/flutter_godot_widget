@@ -8,7 +8,14 @@ import 'dart:async';
 
 
 class Gamewidget extends StatefulWidget {
-  const Gamewidget({super.key});
+  final double? width;
+  final double? height;
+
+  const Gamewidget({
+    super.key,
+    this.width,
+    this.height,
+  });
 
   @override
   _gamewidget createState() => _gamewidget();
@@ -34,7 +41,9 @@ class _gamewidget extends State<Gamewidget> {
 
   @override
   Widget build(BuildContext context) {
-    
+    double _width = widget.width ?? 300.0; // Use the passed width or default to 300.0
+    double _height = widget.height ?? 300.0; // Use the passed height or default to 300.0
+
     //_eventStream.receiveBroadcastStream().distinct().map((dynamic event) {
     //  
     //}).listen;
@@ -81,7 +90,10 @@ class _gamewidget extends State<Gamewidget> {
                       child: AndroidView(
                         viewType: 'platform-view-type',
                         layoutDirection: TextDirection.ltr,
-                        creationParams: <String, dynamic>{},
+                        creationParams: <String, dynamic>{
+                          'width': _width,
+                          'height': _height,
+                        },
                         creationParamsCodec: const StandardMessageCodec(),
                       ),
                     ),
