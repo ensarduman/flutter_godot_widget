@@ -38,6 +38,7 @@ import java.util.concurrent.TimeUnit
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.fragment.app.Fragment
 import android.util.Log
+import android.view.Gravity
 import android.view.ViewGroup
 
 import androidx.annotation.NonNull;
@@ -166,12 +167,22 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
                     (parent as? ViewGroup)?.addView(godotFragment.view)
                 }
                 existingView.layoutParams = FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.MATCH_PARENT, // Set the desired width
-                    FrameLayout.LayoutParams.MATCH_PARENT  // Set the desired height
+                    300, // Set the desired width
+                    300  // Set the desired height
                 )
+                var parent1 = (existingView.parent.parent as View);
+                Log.d("GodotStarter", "Parent1X:" + parent1.x.toString())
+                Log.d("GodotStarter", "Parent1Y:" + parent1.y.toString())
+
+                val location = IntArray(2)
+                parent1.getLocationOnScreen(location)
+                Log.d("GodotStarter", "Parent1X: ${location[0]}, Parent1Y: ${location[1]}")
+
+
             }
+
             Log.d("GodotStarter", "View created and added to the parent")
-            godotFragment.view!!
+            godotFragment.requireView()
         } else {
             Log.d("GodotStarter", "Returning placeholder view, waiting for actual view to be ready")
             View(fragmentActivity).also { placeholder ->
