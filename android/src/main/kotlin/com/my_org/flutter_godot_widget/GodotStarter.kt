@@ -169,15 +169,12 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
                 existingView.layoutParams = FrameLayout.LayoutParams(
                     300, // Set the desired width
                     300  // Set the desired height
-                )
-                var parent1 = (existingView.parent.parent as View);
-                Log.d("GodotStarter", "Parent1X:" + parent1.x.toString())
-                Log.d("GodotStarter", "Parent1Y:" + parent1.y.toString())
+                ).apply {
+                    gravity = Gravity.START
+                }
 
-                val location = IntArray(2)
-                parent1.getLocationOnScreen(location)
-                Log.d("GodotStarter", "Parent1X: ${location[0]}, Parent1Y: ${location[1]}")
-
+                existingView.x = 400f
+                existingView.y = 400f
 
             }
 
