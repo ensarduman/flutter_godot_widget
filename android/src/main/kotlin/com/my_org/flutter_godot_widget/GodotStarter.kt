@@ -87,14 +87,8 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
         println("init called in godotstarter")
         width = (creationParams?.get("width") as? Double)?.toInt()
         height = (creationParams?.get("height") as? Double)?.toInt()
-        println("init X: ${(creationParams?.get("x") ?: "x gelmedi")}")
-        println("init Y: ${(creationParams?.get("y") ?: "y gelmedi")}")
         x = (creationParams?.get("x") as? Number)?.toFloat()
         y = (creationParams?.get("y") as? Number)?.toFloat()
-        println("init X: ${(creationParams?.get("x") ?: "x gelmedi")}")
-        println("init Y: ${(creationParams?.get("y") ?: "y gelmedi")}")
-        println("init X: ${(x ?: "x gelmedi")}")
-        println("init Y: ${(y ?: "y gelmedi")}")
         initializegodot()
     }
 
