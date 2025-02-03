@@ -43,17 +43,32 @@ class FlutterGodotWidgetPlugin: FlutterPlugin, MethodCallHandler {
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         if (call.method == "setGodotViewPositionAndSize") {
+            val displayMetrics = Resources.getSystem().displayMetrics
+            val screenWidthPx = displayMetrics.widthPixels // Cihazın tam genişliği (px)
+            val screenHeightPx = displayMetrics.heightPixels // Cihazın tam yüksekliği (px)
+
             val xDp = call.argument<Double>("x")?.toFloat() ?: 0f  // X konumu (DP)
             val yDp = call.argument<Double>("y")?.toFloat() ?: 0f  // Y konumu (DP)
-            val widthDp = call.argument<Double>("width")?.toFloat() ?: 0f  // Genişlik (DP)
-            val heightDp = call.argument<Double>("height")?.toFloat() ?: 0f // Yükseklik (DP)
+            val widthDp = call.argument<Double>("width")?.toFloat() // Genişlik (DP) (nullable)
+            val heightDp = call.argument<Double>("height")?.toFloat() // Yükseklik (DP) (nullable)
 
             // DP -> PX dönüşümü
-            val displayMetrics = Resources.getSystem().displayMetrics
             val xPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, xDp, displayMetrics).toInt()
             val yPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, yDp, displayMetrics).toInt()
-            val widthPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, widthDp, displayMetrics).toInt()
-            val heightPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, heightDp, displayMetrics).toInt()
+
+            // Eğer width null ise, tam ekran genişliği kullan
+            val widthPx = if (widthDp != null) {
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, widthDp, displayMetrics).toInt()
+            } else {
+                screenWidthPx // Tam ekran genişliği (px)
+            }
+
+            // Eğer height null ise, tam ekran yüksekliği kullan
+            val heightPx = if (heightDp != null) {
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, heightDp, displayMetrics).toInt()
+            } else {
+                screenHeightPx // Tam ekran yüksekliği (px)
+            }
 
             // Godot View'in yeni boyut ve konumunu ayarla
             godotView?.apply {

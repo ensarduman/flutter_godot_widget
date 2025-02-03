@@ -3,7 +3,6 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_godot_widget/flutter_godot_widget.dart';
-import 'package:flutter_godot_widget/gamewidget.dart';
 import 'package:flutter_godot_widget/godot_container.dart';
 import 'package:flutter_godot_widget/gravity.dart';
 

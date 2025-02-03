@@ -43,8 +43,8 @@ class _GodotContainerState extends State<GodotContainer> {
     await _channel.invokeMethod('setGodotViewPositionAndSize', {
       "x": position.dx, // X konumu
       "y": position.dy, // Y konumu
-      "width": constraints.maxWidth, // Genişlik
-      "height": constraints.maxHeight, // Yükseklik
+      "width": constraints.maxWidth.toString() == 'Infinity' ? null : constraints.maxWidth, // Genişlik
+      "height": constraints.maxHeight.toString() == 'Infinity' ? null : constraints.maxHeight, // Yükseklik
     });
   }
 }
