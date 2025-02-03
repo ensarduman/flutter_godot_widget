@@ -54,10 +54,12 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: SizedBox(
-          height: 200,
-          width: 400,
-          child: GodotContainer(),
+        body: Center(
+          child: SizedBox(
+            height: 200,
+            width: 400,
+            child: GodotContainer(),
+          ),
         ),
       ),
     );
