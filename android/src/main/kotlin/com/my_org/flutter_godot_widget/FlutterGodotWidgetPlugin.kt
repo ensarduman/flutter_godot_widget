@@ -2,29 +2,20 @@ package com.my_org.flutter_godot_widget
 
 import androidx.annotation.NonNull
 import android.content.Context
-import android.content.Intent
-import android.os.Bundle
-import androidx.core.content.ContextCompat.startActivity
+import android.content.res.Resources
+import android.util.TypedValue
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
-import io.flutter.embedding.android.FlutterActivity
-import io.flutter.embedding.engine.FlutterEngine
-import androidx.fragment.app.FragmentActivity
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
-import android.util.Log
-
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
-
-import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 
 /** FlutterGodotWidgetPlugin */
-class FlutterGodotWidgetPlugin: FlutterPlugin, MethodCallHandler { //! VIEW REGISTORING!!!!
+class FlutterGodotWidgetPlugin: FlutterPlugin, MethodCallHandler {
 
     private lateinit var channel: MethodChannel
     private var messageChannel: EventChannel? = null
@@ -52,16 +43,23 @@ class FlutterGodotWidgetPlugin: FlutterPlugin, MethodCallHandler { //! VIEW REGI
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         if (call.method == "setGodotViewPositionAndSize") {
-            val x = call.argument<Double>("x")?.toInt() ?: 0  // X konumu
-            val y = call.argument<Double>("y")?.toInt() ?: 0  // Y konumu
-            val width = call.argument<Double>("width")?.toInt() ?: 0  // Genişlik
-            val height = call.argument<Double>("height")?.toInt() ?: 0  // Yükseklik
+            val xDp = call.argument<Double>("x")?.toFloat() ?: 0f  // X konumu (DP)
+            val yDp = call.argument<Double>("y")?.toFloat() ?: 0f  // Y konumu (DP)
+            val widthDp = call.argument<Double>("width")?.toFloat() ?: 0f  // Genişlik (DP)
+            val heightDp = call.argument<Double>("height")?.toFloat() ?: 0f // Yükseklik (DP)
+
+            // DP -> PX dönüşümü
+            val displayMetrics = Resources.getSystem().displayMetrics
+            val xPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, xDp, displayMetrics).toInt()
+            val yPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, yDp, displayMetrics).toInt()
+            val widthPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, widthDp, displayMetrics).toInt()
+            val heightPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, heightDp, displayMetrics).toInt()
 
             // Godot View'in yeni boyut ve konumunu ayarla
             godotView?.apply {
-                translationX = x.toFloat()
-                translationY = y.toFloat()
-                layoutParams = FrameLayout.LayoutParams(width, height)
+                translationX = xPx.toFloat()
+                translationY = yPx.toFloat()
+                layoutParams = FrameLayout.LayoutParams(widthPx, heightPx)
             }
 
             result.success(null)
