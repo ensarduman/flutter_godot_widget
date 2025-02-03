@@ -55,8 +55,8 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         body: SizedBox(
-          height: 500,
-          width: 500,
+          height: 200,
+          width: 400,
           child: GodotContainer(),
         ),
       ),
