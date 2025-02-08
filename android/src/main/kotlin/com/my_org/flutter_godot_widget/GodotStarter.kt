@@ -132,8 +132,8 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
         if (godotFragmentOld == null) {
             godotFragment = GodotFragment()
             fragmentTransaction.add(android.R.id.content, godotFragment, "GodotFragment")
-            fragmentTransaction.commitNowAllowingStateLoss()
-            getHostPlugins(godot)
+            fragmentTransaction.commitAllowingStateLoss()
+            //getHostPlugins(godot)
         }else{
             godotFragment = godotFragmentOld
         }
@@ -205,6 +205,32 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
         } else {
             Log.d("GodotStarter", "Returning placeholder view, waiting for actual view to be ready")
             View(fragmentActivity).also { placeholder ->
+                placeholder.let { existingView ->
+                    Log.d("GodotStarter", "Width: ${(width ?: -1)}, Height: ${(height ?: -1)}")
+
+                    existingView.layoutParams = FrameLayout.LayoutParams(
+                        width ?: FrameLayout.LayoutParams.MATCH_PARENT, // Set the desired width
+                        height ?: FrameLayout.LayoutParams.MATCH_PARENT  // Set the desired height
+                    ).apply {
+                        if (gravity_value != null) {
+                            gravity = gravity_value!!
+                        }
+                    }
+
+                    if (x != null)
+                    {
+                        existingView.x = (x ?: 0) as Float
+                    }
+
+                    if (y != null)
+                    {
+                        existingView.y = (y ?: 0) as Float
+                    }
+
+                    FlutterGodotWidgetPlugin.godotView = existingView
+
+                }
+
                 viewReadyCallback = { actualView ->
                     if (placeholder.parent != null) {
                         (placeholder.parent as? ViewGroup)?.removeView(placeholder)
@@ -212,10 +238,28 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
                     if (actualView.parent == null) {
                         (placeholder.parent as? ViewGroup)?.addView(actualView)
                     }
+
+                    Log.d("GodotStarter", "Width: ${(width ?: -1)}, Height: ${(height ?: -1)}")
+
                     actualView.layoutParams = FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT, // Set the desired width
-                        FrameLayout.LayoutParams.MATCH_PARENT  // Set the desired height
-                    )
+                        width ?: FrameLayout.LayoutParams.MATCH_PARENT, // Set the desired width
+                        height ?: FrameLayout.LayoutParams.MATCH_PARENT  // Set the desired height
+                    ).apply {
+                        if (gravity_value != null) {
+                            gravity = gravity_value!!
+                        }
+                    }
+
+                    if (x != null)
+                    {
+                        actualView.x = (x ?: 0) as Float
+                    }
+
+                    if (y != null)
+                    {
+                        actualView.y = (y ?: 0) as Float
+                    }
+
                     Log.d("GodotStarter", "Actual view is now added to the parent view group")
                 }
             }
