@@ -260,6 +260,8 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
                         actualView.y = (y ?: 0) as Float
                     }
 
+                    FlutterGodotWidgetPlugin.godotView = actualView
+
                     Log.d("GodotStarter", "Actual view is now added to the parent view group")
                 }
             }
