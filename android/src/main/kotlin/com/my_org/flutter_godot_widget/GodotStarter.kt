@@ -132,8 +132,8 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
         if (godotFragmentOld == null) {
             godotFragment = GodotFragment()
             fragmentTransaction.add(android.R.id.content, godotFragment, "GodotFragment")
-            fragmentTransaction.commitAllowingStateLoss()
-            //getHostPlugins(godot)
+            fragmentTransaction.commitNowAllowingStateLoss()
+            getHostPlugins(godot)
         }else{
             godotFragment = godotFragmentOld
         }
