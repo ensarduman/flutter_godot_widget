@@ -34,6 +34,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import io.flutter.plugin.platform.PlatformView
 import android.content.ContextWrapper
+import android.content.Intent
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
@@ -62,8 +63,7 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
 
 
     private var godotFragment: GodotFragment = GodotFragment()
-    private val fragmentActivity: FragmentActivity = context as? FragmentActivity
-            ?: throw IllegalStateException("Context must be an instance of FragmentActivity")
+    private lateinit var fragmentActivity: FragmentActivity
 
     private var viewReadyCallback: ((View) -> Unit)? = null
 
@@ -91,7 +91,21 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
         x = (creationParams?.get("x") as? Number)?.toFloat()
         y = (creationParams?.get("y") as? Number)?.toFloat()
         gravity_value = (creationParams?.get("gravity") as? Number)?.toInt()
+        initializeFragmentActivity(context)
         initializegodot()
+    }
+
+    private fun initializeFragmentActivity(context: Context) {
+        if (context is FragmentActivity) {
+            fragmentActivity = context
+        } else {
+            val intent = Intent(context, GodotHostActivity::class.java)
+            context.startActivity(intent)
+
+            if (context is FragmentActivity) {
+                fragmentActivity = context
+            }
+        }
     }
 
     private fun initializegodot() {

@@ -1,6 +1,7 @@
 package com.my_org.flutter_godot_widget
 
 
+import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.os.Handler
@@ -30,7 +31,7 @@ public class godotpluginMaster(godot: Godot?) :  GodotPlugin(godot), EventChanne
             return GodotStarter(activityContext, viewId, creationParams) //! FACTORY
         }
 
-        private fun unwrapActivity(context: Context): FragmentActivity {
+        private fun unwrapActivity(context: Context): Activity {
             var unwrappedContext = context
             while (unwrappedContext is ContextWrapper) {
                 println("Unwrapping context: ${unwrappedContext.javaClass.name}, Base Context: ${unwrappedContext.baseContext?.javaClass?.name}")
@@ -39,7 +40,13 @@ public class godotpluginMaster(godot: Godot?) :  GodotPlugin(godot), EventChanne
                 }
                 unwrappedContext = unwrappedContext.baseContext
             }
-            throw IllegalStateException("Context is not a FragmentActivity : ${context.javaClass.name}")
+
+            if (unwrappedContext is Activity)
+            {
+                return unwrappedContext
+            }
+
+            throw IllegalStateException("Context is not a FragmentActivity or Activity : ${context.javaClass.name}")
         }
     }
     private var faf: String = ""
