@@ -33,17 +33,22 @@ public class godotpluginMaster(godot: Godot?) :  GodotPlugin(godot), EventChanne
 
         private fun unwrapActivity(context: Context): Activity {
             var unwrappedContext = context
+            var activityContext: Activity? = null
             while (unwrappedContext is ContextWrapper) {
                 println("Unwrapping context: ${unwrappedContext.javaClass.name}, Base Context: ${unwrappedContext.baseContext?.javaClass?.name}")
+
                 if (unwrappedContext is FragmentActivity) {
                     return unwrappedContext
                 }
+                else if (unwrappedContext is Activity) {
+                    activityContext = unwrappedContext
+                }
+
                 unwrappedContext = unwrappedContext.baseContext
             }
 
-            if (unwrappedContext is Activity)
-            {
-                return unwrappedContext
+            if (activityContext != null) {
+                return activityContext
             }
 
             throw IllegalStateException("Context is not a FragmentActivity or Activity : ${context.javaClass.name}")

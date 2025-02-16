@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.fragment.app.FragmentManager
 import com.my_org.flutter_godot_widget.godotpluginMaster
 import io.flutter.embedding.android.FlutterFragmentActivity
+import io.flutter.embedding.android.FlutterActivity
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import org.godotengine.godot.plugin.SignalInfo
@@ -19,7 +20,7 @@ import org.godotengine.godot.plugin.SignalInfo
 import org.godotengine.godot.plugin.UsedByGodot*/
 
 
-class MainActivity: FlutterFragmentActivity()/*,GodotPlugin(godot)*/, EventChannel.StreamHandler{
+class MainActivity: FlutterActivity()/*,GodotPlugin(godot)*/, EventChannel.StreamHandler{
     private var faf: String = ""
 
     private var eventSink: EventChannel.EventSink? = null
