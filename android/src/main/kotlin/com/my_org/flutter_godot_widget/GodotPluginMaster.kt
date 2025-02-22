@@ -1,6 +1,7 @@
 package com.my_org.flutter_godot_widget
 
 
+import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.os.Handler
@@ -24,10 +25,31 @@ public class godotpluginMaster(godot: Godot?) :  GodotPlugin(godot), EventChanne
         override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
             val creationParams = args as Map<String?, Any?>?
             println("Context in GodotPluginMaster: $context")
-            val activityContext = unwrapActivity(context)
+            val activityContext = unwrapFragmentActivity(context)
             println("Unwrapped activity: $activityContext")
 
             return GodotStarter(activityContext, viewId, creationParams) //! FACTORY
+        }
+
+        fun unwrapFragmentActivity(context: Context): FragmentActivity {
+            var unwrappedContext = context
+            var activityContext: Activity? = null
+
+            while (unwrappedContext is ContextWrapper) {
+                println("Unwrapping context: ${unwrappedContext.javaClass.name}, Base Context: ${unwrappedContext.baseContext?.javaClass?.name}")
+
+                if (unwrappedContext is FragmentActivity) {
+                    return unwrappedContext
+                } else if (unwrappedContext is Activity) {
+                    activityContext = unwrappedContext
+                }
+
+                unwrappedContext = unwrappedContext.baseContext
+            }
+
+            // Eğer FragmentActivity yok ama bir Activity varsa, onu FragmentActivity olarak sarmalıyoruz.
+            return activityContext?.let { WrappedFragmentActivity(it) }
+                ?: throw IllegalStateException("Context is not a FragmentActivity or Activity: ${context.javaClass.name}")
         }
 
         private fun unwrapActivity(context: Context): FragmentActivity {
@@ -174,12 +196,12 @@ public class godotpluginMaster(godot: Godot?) :  GodotPlugin(godot), EventChanne
         print("godot gave us ")
         sendData2Flut("sup", "FUCK ME")
     }
+}
 
-
-
-
-
-
+class WrappedFragmentActivity(base: Activity) : FragmentActivity() {
+    init {
+        attachBaseContext(base)
+    }
 }
 
 
