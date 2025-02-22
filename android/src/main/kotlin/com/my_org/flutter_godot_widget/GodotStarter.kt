@@ -63,7 +63,7 @@ import org.godotengine.godot.plugin.SignalInfo
 class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>?) : GodotHost, PlatformView {
 
 
-    private var godotFragment: GodotFragment = GodotFragment()
+    private lateinit var godotFragment: GodotFragment
     private lateinit var fragmentActivity: FragmentActivity
     private lateinit var appContext: Context
 
@@ -98,6 +98,7 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
     private fun initializeFragmentActivity(context: Context) {
         appContext = context
         if (context is FragmentActivity) {
+            godotFragment = GodotFragment()
             fragmentActivity = context
             initializegodot(true)
         } else {
@@ -183,7 +184,7 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
         Log.d("GodotStarter", "getView called")
 
         // Eğer fragmentActivity veya godotFragment null ise boş bir View döndür
-        if (true) {// || fragmentActivity == null) {
+        if (!::godotFragment.isInitialized) { //!::fragmentActivity.isInitialized) {// || fragmentActivity == null) {
             Log.d("GodotStarter", "fragmentActivity veya godotFragment null, returning a default white view")
             // View oluşturabilmek için `Context` gerekiyorsa en güvenli yol boş bir FrameLayout döndürmektir.
             return FrameLayout(appContext).apply {
