@@ -49,6 +49,7 @@ import androidx.annotation.Nullable;
 
 import android.view.LayoutInflater;
 import androidx.fragment.app.FragmentTransaction
+import com.google.common.util.concurrent.SettableFuture
 import io.flutter.embedding.android.FlutterFragmentActivity
 import org.godotengine.godot.plugin.GodotPlugin.emitSignal
 import org.godotengine.godot.plugin.SignalInfo
@@ -64,6 +65,7 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
 
     private var godotFragment: GodotFragment = GodotFragment()
     private lateinit var fragmentActivity: FragmentActivity
+    private lateinit var appContext: Context
 
     private var viewReadyCallback: ((View) -> Unit)? = null
 
@@ -83,6 +85,7 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
     private var y: Float? = null;
     private var gravity_value: Int? = null;
 
+    private val fragmentActivityFuture: SettableFuture<FragmentActivity> = SettableFuture.create()
 
     init {
         println("init called in godotstarter")
@@ -92,23 +95,28 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
         y = (creationParams?.get("y") as? Number)?.toFloat()
         gravity_value = (creationParams?.get("gravity") as? Number)?.toInt()
         initializeFragmentActivity(context)
-        initializegodot()
     }
 
     private fun initializeFragmentActivity(context: Context) {
+        appContext = context
         if (context is FragmentActivity) {
             fragmentActivity = context
+            fragmentActivityFuture.set(fragmentActivity)
+            initializegodot()
         } else {
-            val intent = Intent(context, GodotHostActivity::class.java)
-            context.startActivity(intent)
-
-            if (context is FragmentActivity) {
-                fragmentActivity = context
+            GodotHostActivity.setGodotHostActivityCreatedEvent { godotHostActivity ->
+                fragmentActivity = godotHostActivity
+                fragmentActivityFuture.set(fragmentActivity)
+                initializegodot()
             }
+
+            //val intent = Intent(context, GodotHostActivity::class.java)
+            //context.startActivity(intent)
         }
     }
 
     private fun initializegodot() {
+        val activity = fragmentActivityFuture.get()
         val fragmentManager: FragmentManager = fragmentActivity.supportFragmentManager
 
         fragmentManager.registerFragmentLifecycleCallbacks(object : FragmentLifecycleCallbacks() {
@@ -154,11 +162,9 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
     }
 
     override fun getActivity(): FragmentActivity {
-        return fragmentActivity
+        val activity = fragmentActivityFuture.get()
+        return activity
     }
-
-
-
 
     private fun notifyFlutterViewReady() {
         godotFragment.view?.viewTreeObserver?.addOnGlobalLayoutListener(
@@ -172,11 +178,28 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
 
     override fun getGodot(): Godot {
         Log.d("GodotStarter", "getGodot: godot=$godotFragment.godot, view=$godotFragment.view")
+        val activity = fragmentActivityFuture.get()
         return godotFragment.godot ?: throw IllegalStateException("Godot instance is not initialized")
     }
 
     override fun getView(): View {
         Log.d("GodotStarter", "getView called")
+
+        // Eğer fragmentActivity veya godotFragment null ise boş bir View döndür
+        if (true) {// || fragmentActivity == null) {
+            Log.d("GodotStarter", "fragmentActivity veya godotFragment null, returning a default white view")
+            // View oluşturabilmek için `Context` gerekiyorsa en güvenli yol boş bir FrameLayout döndürmektir.
+            return FrameLayout(appContext).apply {
+                setBackgroundColor(android.graphics.Color.WHITE) // Beyaz arka plan
+                layoutParams = FrameLayout.LayoutParams(
+                    width ?: FrameLayout.LayoutParams.MATCH_PARENT,
+                    height ?: FrameLayout.LayoutParams.MATCH_PARENT
+                ).apply {
+                    gravity_value?.let { gravity = it }
+                }
+            }
+        }
+
 
         return if (godotFragment.view != null) {
             Log.d("GodotStarter", "Returning existing view")
