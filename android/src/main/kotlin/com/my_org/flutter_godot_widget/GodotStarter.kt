@@ -85,8 +85,6 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
     private var y: Float? = null;
     private var gravity_value: Int? = null;
 
-    private val fragmentActivityFuture: SettableFuture<FragmentActivity> = SettableFuture.create()
-
     init {
         println("init called in godotstarter")
         width = (creationParams?.get("width") as? Double)?.toInt()
@@ -101,22 +99,20 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
         appContext = context
         if (context is FragmentActivity) {
             fragmentActivity = context
-            fragmentActivityFuture.set(fragmentActivity)
-            initializegodot()
+            initializegodot(true)
         } else {
-            GodotHostActivity.setGodotHostActivityCreatedEvent { godotHostActivity ->
+            GodotHostActivity.setGodotHostActivityCreatedEvent { godotHostActivity, createdGodotFragment ->
                 fragmentActivity = godotHostActivity
-                fragmentActivityFuture.set(fragmentActivity)
-                initializegodot()
+                godotFragment = createdGodotFragment
+                initializegodot(false)
             }
 
-            //val intent = Intent(context, GodotHostActivity::class.java)
-            //context.startActivity(intent)
+            val intent = Intent(context, GodotHostActivity::class.java)
+            context.startActivity(intent)
         }
     }
 
-    private fun initializegodot() {
-        val activity = fragmentActivityFuture.get()
+    private fun initializegodot(isFragmentActivity : Boolean) {
         val fragmentManager: FragmentManager = fragmentActivity.supportFragmentManager
 
         fragmentManager.registerFragmentLifecycleCallbacks(object : FragmentLifecycleCallbacks() {
@@ -147,23 +143,25 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
             transaction.commitNowAllowingStateLoss()
         }
 */
-        // Check if the Godot fragment exists
-        val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
-        val godotFragmentOld = fragmentManager.findFragmentByTag("GodotFragment") as? GodotFragment
+        if (isFragmentActivity) {
+            // Check if the Godot fragment exists
+            val godotFragmentOld =
+                fragmentManager.findFragmentByTag("GodotFragment") as? GodotFragment
 
-        if (godotFragmentOld == null) {
-            godotFragment = GodotFragment()
-            fragmentTransaction.add(android.R.id.content, godotFragment, "GodotFragment")
-            fragmentTransaction.commitAllowingStateLoss()
-            //getHostPlugins(godot)
-        }else{
-            godotFragment = godotFragmentOld
+            if (godotFragmentOld == null) {
+                val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
+                godotFragment = GodotFragment()
+                fragmentTransaction.add(android.R.id.content, godotFragment, "GodotFragment")
+                fragmentTransaction.commitAllowingStateLoss()
+                //getHostPlugins(godot)
+            } else {
+                godotFragment = godotFragmentOld
+            }
         }
     }
 
     override fun getActivity(): FragmentActivity {
-        val activity = fragmentActivityFuture.get()
-        return activity
+        return fragmentActivity
     }
 
     private fun notifyFlutterViewReady() {
@@ -178,7 +176,6 @@ class GodotStarter(context: Context, id: Int, creationParams: Map<String?, Any?>
 
     override fun getGodot(): Godot {
         Log.d("GodotStarter", "getGodot: godot=$godotFragment.godot, view=$godotFragment.view")
-        val activity = fragmentActivityFuture.get()
         return godotFragment.godot ?: throw IllegalStateException("Godot instance is not initialized")
     }
 

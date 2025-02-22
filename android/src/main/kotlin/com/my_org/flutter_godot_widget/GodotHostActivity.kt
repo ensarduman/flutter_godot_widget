@@ -10,13 +10,13 @@ class GodotHostActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        onGodotHostActivityCreatedEvent(this)
-
         val fragmentManager = supportFragmentManager
         val transaction = fragmentManager.beginTransaction()
         val godotFragment = GodotFragment()
         transaction.replace(android.R.id.content, godotFragment)
         transaction.commit()
+
+        onGodotHostActivityCreatedEvent(this, godotFragment)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -24,14 +24,14 @@ class GodotHostActivity : FragmentActivity() {
     }
 
     companion object {
-        private lateinit var godotHostActivityCreatedEvent : (GodotHostActivity) -> Unit
+        private lateinit var godotHostActivityCreatedEvent : (GodotHostActivity, GodotFragment) -> Unit
 
-        fun setGodotHostActivityCreatedEvent(action: (GodotHostActivity) -> Unit){
+        fun setGodotHostActivityCreatedEvent(action: (GodotHostActivity, GodotFragment) -> Unit){
             godotHostActivityCreatedEvent = action
         }
 
-        fun onGodotHostActivityCreatedEvent(activity: GodotHostActivity){
-            godotHostActivityCreatedEvent(activity)
+        fun onGodotHostActivityCreatedEvent(activity: GodotHostActivity, godotFragment: GodotFragment){
+            godotHostActivityCreatedEvent(activity, godotFragment)
         }
     }
 }
