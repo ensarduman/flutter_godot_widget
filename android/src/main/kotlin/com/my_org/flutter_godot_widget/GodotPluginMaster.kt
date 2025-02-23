@@ -4,6 +4,7 @@ package com.my_org.flutter_godot_widget
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -17,21 +18,41 @@ import org.godotengine.godot.Godot
 import org.godotengine.godot.plugin.GodotPlugin
 import org.godotengine.godot.plugin.SignalInfo
 import org.godotengine.godot.plugin.UsedByGodot
+import java.util.concurrent.atomic.AtomicReference
 
 
 public class godotpluginMaster(godot: Godot?) :  GodotPlugin(godot), EventChannel.StreamHandler{
     class GodotPluginMaster:PlatformViewFactory(StandardMessageCodec.INSTANCE) {
 
+
         override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
             val creationParams = args as Map<String?, Any?>?
             println("Context in GodotPluginMaster: $context")
-            val activityContext = unwrapFragmentActivity(context)
-            println("Unwrapped activity: $activityContext")
 
-            return GodotStarter(activityContext, viewId, creationParams) //! FACTORY
+            // AtomicReference kullanarak değişkeni güvenli bir şekilde değiştirebiliriz
+            val activityContext = AtomicReference<FragmentActivity?>()
+
+            unwrapFragmentActivity(context) { newActivity ->
+                println("New FragmentActivity started: $newActivity")
+                activityContext.set(newActivity)
+            }
+
+            if (activityContext.get() == null) {
+                println("Waiting for new FragmentActivity to be ready...")
+                Thread.sleep(600) // Yeni aktivitenin başlaması için bekleme süresi
+                activityContext.set(unwrapFragmentActivity(context))
+            }
+
+            if (activityContext.get() == null) {
+                throw IllegalStateException("Failed to obtain FragmentActivity")
+            }
+
+            println("Unwrapped activity: ${activityContext.get()}")
+            return GodotStarter(activityContext.get()!!, viewId, creationParams) //! FACTORY
         }
 
-        fun unwrapFragmentActivity(context: Context): FragmentActivity {
+
+        fun unwrapFragmentActivity(context: Context, onActivityStarted: ((FragmentActivity) -> Unit)? = null): FragmentActivity? {
             var unwrappedContext = context
             var activityContext: Activity? = null
 
@@ -47,9 +68,36 @@ public class godotpluginMaster(godot: Godot?) :  GodotPlugin(godot), EventChanne
                 unwrappedContext = unwrappedContext.baseContext
             }
 
-            // Eğer FragmentActivity yok ama bir Activity varsa, onu FragmentActivity olarak sarmalıyoruz.
-            return activityContext?.let { WrappedFragmentActivity(it) }
-                ?: throw IllegalStateException("Context is not a FragmentActivity or Activity: ${context.javaClass.name}")
+            return if (activityContext != null) {
+                println("Warning: Restarting as FragmentActivity...")
+
+                restartAsFragmentActivity(activityContext) { newActivity ->
+                    onActivityStarted?.invoke(newActivity)
+                }
+
+                null // Yeni bir Activity açıldığı için mevcut olanı döndüremiyoruz, ancak callback ile yakalayabiliriz.
+            } else {
+                null
+            }
+        }
+
+        fun restartAsFragmentActivity(activity: Activity, onActivityStarted: (FragmentActivity) -> Unit) {
+            val intent = Intent(activity, WrappedFragmentActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+
+            activity.startActivity(intent)
+            activity.finish()
+
+            // Yeni açılan `FragmentActivity`'yi alıp callback ile döndürmek için bekleyelim.
+            activity.application?.mainLooper?.let { looper ->
+                android.os.Handler(looper).postDelayed({
+                    (activity.application as? ContextWrapper)?.baseContext?.let { base ->
+                        if (base is FragmentActivity) {
+                            onActivityStarted(base)
+                        }
+                    }
+                }, 500) // Yeni aktivitenin başlaması için kısa bir gecikme ekledik.
+            }
         }
 
         private fun unwrapActivity(context: Context): FragmentActivity {
@@ -198,10 +246,7 @@ public class godotpluginMaster(godot: Godot?) :  GodotPlugin(godot), EventChanne
     }
 }
 
-class WrappedFragmentActivity(base: Activity) : FragmentActivity() {
-    init {
-        attachBaseContext(base)
-    }
-}
+class WrappedFragmentActivity : FragmentActivity()
+
 
 

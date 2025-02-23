@@ -1,5 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    package="com.my_org.flutter_godot_widget">
 
+    <application>
+        <!-- WrappedFragmentActivity Tanımlaması -->
+        <activity android:name="com.my_org.flutter_godot_widget.WrappedFragmentActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+    </application>
 
 </manifest>
